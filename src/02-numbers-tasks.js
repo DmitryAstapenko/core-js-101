@@ -147,6 +147,8 @@ function parseNumberFromString(value) {
 
   if (number.length === 1) {
     return Number(number);
+  } if (number[0][0] === '-') {
+    return Number(number[0]) - Number(number[1]) / (10 ** number[1].length);
   }
   return Number(number[0]) + Number(number[1]) / (10 ** number[1].length);
 }
@@ -164,8 +166,8 @@ function parseNumberFromString(value) {
  *   3,3,3   => 5.196152422706632
  *   1,2,3   => 3.741657386773941
  */
-function getParallelipidedDiagonal(/* a, b, c */) {
-  throw new Error('Not implemented');
+function getParallelipidedDiagonal(a, b, c) {
+  return Math.sqrt(a ** 2 + b ** 2 + c ** 2);
 }
 
 /**
@@ -185,8 +187,8 @@ function getParallelipidedDiagonal(/* a, b, c */) {
  *   1678, 2  => 1700
  *   1678, 3  => 2000
  */
-function roundToPowerOfTen(/* num, pow */) {
-  throw new Error('Not implemented');
+function roundToPowerOfTen(num, pow) {
+  return Math.round(num / (10 ** pow)) * (10 ** pow);
 }
 
 /**
@@ -206,8 +208,17 @@ function roundToPowerOfTen(/* num, pow */) {
  *   16 => false
  *   17 => true
  */
-function isPrime(/* n */) {
-  throw new Error('Not implemented');
+function isPrime(n) {
+  if (n > 3) {
+    if (n % 2 === 0) return false;
+
+    for (let i = Math.trunc(Math.sqrt(n)); i > 2; i -= 1) {
+      if (i % 2 !== 0) {
+        if (n % i === 0) return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -225,8 +236,10 @@ function isPrime(/* n */) {
  *   toNumber(42, 0) => 42
  *   toNumber(new Number(42), 0) => 42
  */
-function toNumber(/* value, def */) {
-  throw new Error('Not implemented');
+function toNumber(value, def) {
+  const number = Number(value);
+
+  return Number.isNaN(number) ? def : number;
 }
 
 module.exports = {
