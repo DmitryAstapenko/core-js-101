@@ -114,33 +114,109 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+class Selector {
+  constructor() {
+    this.selector = Array(6).fill('');
+    this.previous = 0;
+  }
+
+  element(value) {
+    if (this.selector[0]) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    Selector.checkTheOrder(0, this.previous);
+    this.selector[0] = value;
+    this.previous = 0;
+    return this;
+  }
+
+  id(value) {
+    if (this.selector[1]) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    Selector.checkTheOrder(1, this.previous);
+    this.selector[1] = `#${value}`;
+    this.previous = 1;
+    return this;
+  }
+
+  class(value) {
+    Selector.checkTheOrder(2, this.previous);
+    this.selector[2] += `.${value}`;
+    this.previous = 2;
+    return this;
+  }
+
+  attr(value) {
+    Selector.checkTheOrder(3, this.previous);
+    this.selector[3] += `[${value}]`;
+    this.previous = 3;
+    return this;
+  }
+
+  pseudoClass(value) {
+    Selector.checkTheOrder(4, this.previous);
+    this.selector[4] += `:${value}`;
+    this.previous = 4;
+    return this;
+  }
+
+  pseudoElement(value) {
+    if (this.selector[5]) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    Selector.checkTheOrder(5, this.previous);
+    this.selector[5] = `::${value}`;
+    this.previous = 5;
+    return this;
+  }
+
+  stringify() {
+    return this.selector.join('');
+  }
+
+  static combine(selector1, combinator, selector2) {
+    return {
+      stringify() {
+        return `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+      },
+    };
+  }
+
+  static checkTheOrder(current, previous) {
+    if (current < previous) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    return new Selector().element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return new Selector().id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new Selector().class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new Selector().attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new Selector().pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return new Selector().pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return Selector.combine(selector1, combinator, selector2);
   },
 };
 
