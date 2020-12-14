@@ -100,7 +100,7 @@ function getFastestPromise(array) {
  *    });
  *
  */
-function chainPromises(array, action) {  
+function chainPromises(array, action) {
   const promise = new Promise((resolve) => {
     resolve(array.reduce((accumulator, p) => {
       p.then((res) => accumulator.push(res), (reject) => reject);
